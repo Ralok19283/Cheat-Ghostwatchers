@@ -177,7 +177,8 @@ namespace GhostWatchersTrainer
             GUI.EndScrollView();
 
             string footer = Time.realtimeSinceStartup < statusUntil ? status
-                : UpdateChecker.NewerVersion != null ? $"<color=#66ff66>Update v{UpdateChecker.NewerVersion} available - run \"Update Trainer.bat\"</color>"
+                : UpdateChecker.Downloaded ? $"<color=#66ff66>Update v{UpdateChecker.NewerVersion} downloaded - restart the game to use it</color>"
+                : UpdateChecker.NewerVersion != null ? $"<color=#66ff66>Downloading update v{UpdateChecker.NewerVersion}...</color>"
                 : $"v{TrainerVersion.Current}   F9 = open / close menu";
             GUI.Label(new Rect(Pad, window.height - 30, W - 2 * Pad, 26), footer, sLbl);
             GUI.DragWindow(new Rect(0, 0, W, 24));

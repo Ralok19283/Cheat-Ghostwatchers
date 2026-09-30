@@ -2,3 +2,9 @@ src/bin/
 src/obj/
 *.download
 
+src/Patcher/bin/
+src/Patcher/obj/
+
+setup.ps1
+Install Ghost Watchers Cheat.bat
+

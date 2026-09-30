@@ -45,7 +45,7 @@ if ($proc) {
 
 if ($Uninstall) {
     # Only the loader entry point + our plugin; BepInEx folder is left for logs/other mods
-    foreach ($f in 'winhttp.dll', 'doorstop_config.ini', 'BepInEx\plugins\GhostWatchersTrainer.dll') {
+    foreach ($f in 'winhttp.dll', 'doorstop_config.ini', 'BepInEx\plugins\GhostWatchersTrainer.dll', 'BepInEx\plugins\GhostWatchersTrainer.dll.new', 'BepInEx\patchers\GhostWatchersUpdater.dll') {
         $p = Join-Path $GamePath $f
         if (Test-Path -LiteralPath $p) { Remove-Item -LiteralPath $p -Force }
     }
@@ -67,6 +67,11 @@ if ($Uninstall) {
     Copy-Item (Join-Path $here 'bepinex\*') $GamePath -Recurse -Force
     New-Item -ItemType Directory -Force (Join-Path $GamePath 'BepInEx\plugins') | Out-Null
     Copy-Item (Join-Path $here 'GhostWatchersTrainer.dll') (Join-Path $GamePath 'BepInEx\plugins') -Force
+    $patcher = Join-Path $here 'GhostWatchersUpdater.dll'
+    if (Test-Path -LiteralPath $patcher) {
+        New-Item -ItemType Directory -Force (Join-Path $GamePath 'BepInEx\patchers') | Out-Null
+        Copy-Item -LiteralPath $patcher (Join-Path $GamePath 'BepInEx\patchers') -Force
+    }
     $repoTxt = Join-Path $here 'repo.txt'
     if (Test-Path -LiteralPath $repoTxt) { Copy-Item -LiteralPath $repoTxt (Join-Path $GamePath 'BepInEx\plugins\repo.txt') -Force }
     Write-Host 'Trainer installed.' -ForegroundColor Green
@@ -94,7 +99,7 @@ if ($ok) {
 } else {
     Write-Host 'PROBLEM: the cheat menu did not start.' -ForegroundColor Red
     Write-Host "  Game folder:  $GamePath"
-    foreach ($f in 'winhttp.dll', 'doorstop_config.ini', 'BepInEx\core\BepInEx.dll', 'BepInEx\plugins\GhostWatchersTrainer.dll') {
+    foreach ($f in 'winhttp.dll', 'doorstop_config.ini', 'BepInEx\core\BepInEx.dll', 'BepInEx\plugins\GhostWatchersTrainer.dll', 'BepInEx\patchers\GhostWatchersUpdater.dll') {
         $exists = Test-Path -LiteralPath (Join-Path $GamePath $f)
         Write-Host ("  {0,-45} {1}" -f $f, $(if ($exists) { 'found' } else { 'MISSING' })) -ForegroundColor $(if ($exists) { 'Gray' } else { 'Red' })
     }

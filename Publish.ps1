@@ -35,11 +35,19 @@ try {
 $dll = Join-Path $src 'bin\Release\net472\GhostWatchersTrainer.dll'
 Copy-Item -LiteralPath $dll (Join-Path $root 'GhostWatchersTrainer.dll') -Force
 
+# auto-update patcher (runs before plugins load and swaps in new versions)
+Push-Location (Join-Path $src 'Patcher')
+try {
+    dotnet build -c Release "-p:BepInExDir=$(Join-Path $root 'bepinex')" -nologo -v q
+    if ($LASTEXITCODE -ne 0) { throw 'Patcher build failed' }
+} finally { Pop-Location }
+Copy-Item -LiteralPath (Join-Path $src 'Patcher\bin\Release\net472\GhostWatchersUpdater.dll') (Join-Path $root 'GhostWatchersUpdater.dll') -Force
+
 # ---- zip (forward-slash entry names so every unzip tool keeps the folders) --------------
 $stage = Join-Path $env:TEMP "gwt_stage_$([guid]::NewGuid().ToString('N'))"
 $pkg = Join-Path $stage 'GhostWatchersCheatMenu'
 New-Item -ItemType Directory -Force (Join-Path $pkg 'Save Editor') | Out-Null
-foreach ($f in 'Install Trainer.bat', 'Uninstall Trainer.bat', 'Update Trainer.bat', 'Install.ps1', 'Update.ps1', 'repo.txt', 'README.txt', 'GhostWatchersTrainer.dll') {
+foreach ($f in 'Install Trainer.bat', 'Uninstall Trainer.bat', 'Update Trainer.bat', 'Install.ps1', 'Update.ps1', 'repo.txt', 'README.txt', 'GhostWatchersTrainer.dll', 'GhostWatchersUpdater.dll') {
     Copy-Item -LiteralPath (Join-Path $root $f) $pkg
 }
 Copy-Item -LiteralPath (Join-Path $root 'bepinex') (Join-Path $pkg 'bepinex') -Recurse
